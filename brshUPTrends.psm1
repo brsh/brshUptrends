@@ -40,7 +40,7 @@ Get-ChildItem $ScriptPath/public -Recurse -Filter "*.ps1" -File | ForEach-Object
 [bool] $script:UseSecureToken = $false
 $script:CurrentGroups = $null
 $script:CurrentMembers = $null
-$script:MaintenanceWindows = $null
+$script:MaintenancePeriods = $null
 
 try {
 	if (-not (get-module -Name SecureTokens)) {

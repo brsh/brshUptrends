@@ -5,7 +5,7 @@ function Request-uptGroup {
 
 	.DESCRIPTION
 	This function uses the API to pull a list of MonitorGroups from Uptrends - specifically, you
-	need the GUID. You can set Maintenance Windows against an entire group, if you know the GUID.
+	need the GUID. You can set Maintenance Periods against an entire group, if you know the GUID.
 
 	Alternatively, you can set an MW against a monitor, but you need the GUID of that monitor,
 	which you can get by using the Request-uptGroupMember function ... as long as you
@@ -57,8 +57,8 @@ function Request-uptGroup {
 	param (
 		[Parameter(Mandatory = $false, Position = 0)]
 		[pscredential] $Credential,
-		[switch] $DoNotStoreGroups = $false,
-		[string[]] $Filter
+		[string[]] $Filter,
+		[switch] $DoNotStoreGroups = $false
 	)
 
 	[pscredential] $CurCred = $null
@@ -187,8 +187,11 @@ function Request-uptGroupMember {
 		[Parameter(ParameterSetName = 'GUID')]
 		[Parameter(ParameterSetName = 'Name')]
 		[Parameter(ParameterSetName = 'Default')]
-		[switch] $DoNotStoreMembers = $false,
-		[string[]] $Filter
+		[string[]] $Filter,
+		[Parameter(ParameterSetName = 'GUID')]
+		[Parameter(ParameterSetName = 'Name')]
+		[Parameter(ParameterSetName = 'Default')]
+		[switch] $DoNotStoreMembers = $false
 	)
 	BEGIN {
 		$Members = @()

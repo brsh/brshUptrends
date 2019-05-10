@@ -15,7 +15,7 @@ function Invoke-MPRead {
 	}
 
 	$MW_url = "Monitor/${MonitorGUID}/MaintenancePeriod"
-	$MaintWindow = @()
+	$MaintPeriod = @()
 
 	if ((($null -eq $Name) -or ($Name.ToString().Length -eq 0)) -and ($null -ne $CurCred)) {
 		$Name = (Request-uptMonitor -MonitorGuid $MonitorGuid -Credential $CurCred).Name
@@ -38,7 +38,7 @@ function Invoke-MPRead {
 				Name            = $Name
 				MonitorGUID     = $MonitorGUID
 			}
-			$retval.PSTypeNames.Insert(0, "brshUptrends.MaintenanceWindow")
+			$retval.PSTypeNames.Insert(0, "brshUptrends.MaintenancePeriod")
 			if ($ShowSummary) {
 				$hash = @{
 					MonitorGUID = $MonitorGUID
@@ -54,11 +54,19 @@ function Invoke-MPRead {
 			}
 		}
 	} else {
+		$hash = @{
+			MonitorGUID = $MonitorGUID
+			Name        = $Name
+			BaseURL     = $MW_url
+		}
+		if ($null -ne $_.BaseURL) {
+			$hash.BaseURL = $_.BaseURL
+		}
 		$all | ForEach-Object {
 			try {
 				$_ | Add-Member -MemberType NoteProperty -Name 'Name' -Value $Name
 				$_ | Add-Member -MemberType NoteProperty -Name 'MonitorGUID' -Value $MonitorGUID
-				$_.PSTypeNames.Insert(0, "brshUptrends.MaintenanceWindow")
+				$_.PSTypeNames.Insert(0, "brshUptrends.MaintenancePeriod")
 				$retval = $_
 				if ($retval.ID) {
 					$retval | Add-Member -MemberType NoteProperty -Name 'ID' -Value ([int] $_.ID) -Force
@@ -85,26 +93,33 @@ function Invoke-MPRead {
 					}
 					$retval = , "None Defined ($hold)"
 				}
-				$hash = @{
-					MonitorGUID = $MonitorGUID
-					Name        = $Name
-					BaseURL     = $MW_url
-				}
-				if ($null -ne $_.BaseURL) {
-					$hash.BaseURL = $_.BaseURL
-				}
-				$hash.Period = $retval
+				# $hash = @{
+				# 	MonitorGUID = $MonitorGUID
+				# 	Name        = $Name
+				# 	BaseURL     = $MW_url
+				# }
+				# if ($null -ne $_.BaseURL) {
+				# 	$hash.BaseURL = $_.BaseURL
+				# }
+				$MaintPeriod += $retval
 
-				if ($ShowSummary) {
-					$obj = New-Object -TypeName PSCustomObject -Property $hash
-					$obj.PSTypeNames.Insert(0, "brshUptrends.MaintenanceList")
-					$obj
-				} else {
-					$retval
-				}
+				# if ($ShowSummary) {
+				# 	$obj = New-Object -TypeName PSCustomObject -Property $hash
+				# 	$obj.PSTypeNames.Insert(0, "brshUptrends.MaintenanceList")
+				# 	$obj
+				# } else {
+				# 	$retval
+				# }
+				if (-not $ShowSummary) { $retval }
 			} catch {
 				Write-Status -message 'Whoops!' -e $_ -Type 'Error'
 			}
+		}
+		if ($ShowSummary) {
+			$hash.Period = $MaintPeriod
+			$obj = New-Object -TypeName PSCustomObject -Property $hash
+			$obj.PSTypeNames.Insert(0, "brshUptrends.MaintenanceList")
+			$obj
 		}
 	}
 }

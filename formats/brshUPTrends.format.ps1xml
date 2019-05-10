@@ -90,9 +90,9 @@
 			</ListControl>
   		</View>
 		<View>
-			<Name>brshUptrends.MaintenanceWindow</Name>
+			<Name>brshUptrends.MaintenancePeriod</Name>
 			<ViewSelectedBy>
-				<TypeName>brshUptrends.MaintenanceWindow</TypeName>
+				<TypeName>brshUptrends.MaintenancePeriod</TypeName>
 			</ViewSelectedBy>
 			<TableControl>
 				<TableHeaders>

@@ -124,7 +124,7 @@ function Request-uptGroupMaintenancePeriod {
 			})]
 		[string[]] $Description,
 		[pscredential] $Credential,
-		#[switch] $DoNotStoreWindows = $false,
+		#[switch] $DoNotStorePeriods = $false,
 		[switch] $ShowSummary,
 		[switch] $IncludeAllMonitors
 	)
@@ -154,7 +154,7 @@ function Request-uptGroupMaintenancePeriod {
 
 		if ($GroupGUID) {
 			$GroupGUID | ForEach-Object {
-				$Item = Request-uptGroupMember -GroupGUID $_ -Credential $CurCred -DoNotStoreMembers | Request-uptMonitorMaintenanceWindow -Credential $CurCred -ShowSummary:$ShowSummary -IncludeAllMonitors:$IncludeAllMonitors
+				$Item = Request-uptGroupMember -GroupGUID $_ -Credential $CurCred -DoNotStoreMembers | Request-uptMonitorMaintenancePeriod -Credential $CurCred -ShowSummary:$ShowSummary -IncludeAllMonitors:$IncludeAllMonitors
 				$Item
 			}
 		}
@@ -163,7 +163,7 @@ function Request-uptGroupMaintenancePeriod {
 	END { }
 }
 
-function Request-uptMonitorMaintenanceWindow {
+function Request-uptMonitorMaintenancePeriod {
 	[CmdletBinding(DefaultParameterSetName = 'Default')]
 	param (
 		[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'GUID', ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
@@ -214,18 +214,18 @@ function Request-uptMonitorMaintenanceWindow {
 	END { }
 }
 
-# function Get-uptMaintenanceWindow {
+# function Get-uptMaintenancePeriod {
 # 	param (
 # 		[string] $Filter
 # 	)
-# 	if ($null -eq $script:MaintenanceWindows) {
-# 		Write-Status -Message 'No MaintenanceWindows have been requested from Uptrends.' -Type 'Error' -Level 0
-# 		Write-Status -Message 'Run Request-uptMaintenanceWindow to save a working set.' -Type 'Warning' -Level 1
+# 	if ($null -eq $script:MaintenancePeriods) {
+# 		Write-Status -Message 'No MaintenancePeriods have been requested from Uptrends.' -Type 'Error' -Level 0
+# 		Write-Status -Message 'Run Request-uptMaintenancePeriod to save a working set.' -Type 'Warning' -Level 1
 # 	} else {
 # 		if ($Filter) {
-# 			$script:MaintenanceWindows | Where-Object { $_.Name -match "$Filter" }
+# 			$script:MaintenancePeriods | Where-Object { $_.Name -match "$Filter" }
 # 		} else {
-# 			$script:MaintenanceWindows
+# 			$script:MaintenancePeriods
 # 		}
 # 	}
 # }
