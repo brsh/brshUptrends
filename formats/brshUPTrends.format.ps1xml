@@ -1,0 +1,198 @@
+<Configuration>
+	<ViewDefinitions>
+		<View>
+			<Name>brshUptrends.Group</Name>
+			<ViewSelectedBy>
+				<TypeName>brshUptrends.Group</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<TableHeaders>
+					<TableColumnHeader>
+						<Label>GroupGUID</Label>
+						<Width>38</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Label>Description</Label>
+					</TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>GroupGUID</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Description</PropertyName>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+		<View>
+			<Name>brshUptrends.Monitor</Name>
+			<ViewSelectedBy>
+				<TypeName>brshUptrends.Monitor</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<TableHeaders>
+					<TableColumnHeader>
+						<Label>MonitorGUID</Label>
+						<Width>38</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Label>Name</Label>
+					</TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>MonitorGUID</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Name</PropertyName>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+		</View>
+
+		<View>
+			<Name>brshUptrends.MaintenanceList</Name>
+			<ViewSelectedBy>
+				<TypeName>brshUptrends.MaintenanceList</TypeName>
+			</ViewSelectedBy>
+			<ListControl>
+				<ListEntries>
+					<ListEntry>
+						<ListItems>
+							<ListItem>
+								<PropertyName>MonitorGUID</PropertyName>
+							</ListItem>
+							<ListItem>
+								<PropertyName>Name</PropertyName>
+							</ListItem>
+							<ListItem>
+							<label>Period</label>
+									<ScriptBlock>
+									$_.Period | Foreach-Object {
+										if ($_.ID) {
+											"{0}:{1}:{2}" -f $_.ID, $_.ScheduleMode, $_.MaintenanceType
+										}
+									}
+									</ScriptBlock>
+							</ListItem>
+						</ListItems>
+					</ListEntry>
+				</ListEntries>
+			</ListControl>
+  		</View>
+		<View>
+			<Name>brshUptrends.MaintenanceWindow</Name>
+			<ViewSelectedBy>
+				<TypeName>brshUptrends.MaintenanceWindow</TypeName>
+			</ViewSelectedBy>
+			<TableControl>
+				<TableHeaders>
+					<TableColumnHeader>
+						<Label>ID</Label>
+						<Width>9</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Label>Disable</Label>
+						<Width>7</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Label>MonitorGUID</Label>
+						<Width>36</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Label>Name</Label>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Label>Mode</Label>
+						<Width>7</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Label>Start</Label>
+						<Width>16</Width>
+					</TableColumnHeader>
+					<TableColumnHeader>
+						<Label>End</Label>
+						<Width>16</Width>
+					</TableColumnHeader>
+				</TableHeaders>
+				<TableRowEntries>
+					<TableRowEntry>
+						<TableColumnItems>
+							<TableColumnItem>
+								<PropertyName>ID</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<ScriptBlock>
+									if ($null -eq $_.ID) {
+										'N/A'
+									} elseif ($_.MaintenanceType -match 'Notifications') {
+										'Alerts'
+									} else {
+										'All'
+									}
+								</ScriptBlock>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>MonitorGUID</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>Name</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<PropertyName>ScheduleMode</PropertyName>
+							</TableColumnItem>
+							<TableColumnItem>
+								<ScriptBlock>
+									if ($_.StartDateTime) {
+										$_.StartDateTime.ToString('MM/dd/yyyy HH:mm')
+									} elseif ($_.MonthDay) {
+										Switch ($_.MonthDay % 100) {
+											11 { $suffix = "th" }
+											12 { $suffix = "th" }
+											13 { $suffix = "th" }
+											default {
+												Switch ($Number % 10) {
+														1 { $suffix = "st" }
+														2 { $suffix = "nd" }
+														3 { $suffix = "rd" }
+														default { $suffix = "th"}
+												}
+											}
+										}
+										"{0}{1} at {2}" -f $_.MonthDay, $suffix, ($_.StartTime.ToString('HH:mm'))
+									} elseif ($_.Weekday) {
+										"{0}s at {1}" -f $_.WeekDay, $_.StartTime.ToString('HH:mm')
+									} else {
+										$_.StartTime.ToString('HH:mm')
+									}
+								</ScriptBlock>
+							</TableColumnItem>
+							<TableColumnItem>
+								<ScriptBlock>
+									if ($_.EndDateTime) {
+										$_.EndDateTime.ToString('MM/dd/yyyy HH:mm')
+									} else {
+										$_.EndTime.ToString('HH:mm')
+									}
+								</ScriptBlock>
+							</TableColumnItem>
+						</TableColumnItems>
+					</TableRowEntry>
+				</TableRowEntries>
+			</TableControl>
+
+
+
+  		</View>
+
+	</ViewDefinitions>
+</Configuration>
