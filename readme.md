@@ -1,5 +1,7 @@
 ﻿# brshUPTrends - Manage Uptrends monitors via API calls
 
+Note: Compatible with PowerShell 5.1 and PowerShell Core 6.x
+
 [Uptrends](www.uptrends.com) (www.uptrends.com) provides site monitoring/alerting, plus some misc other features
 that are nice to have (plus some that could use some improvements \<cough\>maintenance period
 setting, mobile app\</cough\>).
