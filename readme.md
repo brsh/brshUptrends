@@ -105,7 +105,7 @@ within those groups. Again, this is handy for doing stuff ... cuz you get those 
     Request-uptGroupMember [-MonitorGroupName] <String[]> [-Credential <PSCredential>] [-Filter <String[]>] [-DoNotStoreMembers]
 ```
 
-If you have the GroupGUID, that'll get you the fastest turn around. Just supply it (as 1 GUID or an array),
+If you have the GroupGUID, that'll get you the fastest turnaround. Just supply it (as 1 GUID or an array),
 and you'll get the monitors therein.
 
 If you don't want to mess with GUIDs... well, 1) get over it, and 2) ok, you don't have to. You can
@@ -141,7 +141,7 @@ MonitorGUID                            Name
 
 To see what MPs are defined on monitors, you use the `Request-uptMonitorMaintenancePeriod` function
 for querying individual monitors, or the `Request-uptGroupMaintenancePeriod` function for querying
-groups (the Group one just wraps the groupmember function and pipes it to the MonitorMW function,
+groups (the Group one just wraps the GroupMember function and pipes it to the MonitorMP function,
 basically just helping shorten things for you).
 
 #### Syntax
@@ -187,7 +187,7 @@ PS> Request-uptGroup -Filter 'Prod' | Request-uptGroupMaintenancePeriod
 ID        Disable MonitorGUID                          Name                                    Mode    Start            End
 --        ------- -----------                          ----                                    ----    -----            ---
 490638    All     608174e8-01ec-4565-9abe-3ad5136b3a45 This is my monitor                      OneTime 06/07/2019 16:03 06/28/2019 15:15
-489533    Alerts  608174e8-01ec-4565-9abe-3ad5136b3a45 This is my monitor                      OneTime 05/03/2019 16:02 06/07/2019 16:02
+489633    Alerts  608174e8-01ec-4565-9abe-3ad5136b3a45 This is my monitor                      Daily   16:02            16:12
 ```
 
 and
@@ -198,7 +198,7 @@ PS> Request-uptMonitorMaintenancePeriod -MonitorGUID '608174e8-01ec-4565-9abe-3a
 ID        Disable MonitorGUID                          Name                                    Mode    Start            End
 --        ------- -----------                          ----                                    ----    -----            ---
 490638    All     608174e8-01ec-4565-9abe-3ad5136b3a45 This is my monitor                      OneTime 06/07/2019 16:03 06/28/2019 15:15
-489533    Alerts  608174e8-01ec-4565-9abe-3ad5136b3a45 This is my monitor                      OneTime 05/03/2019 16:02 06/07/2019 16:02
+489733    Alerts  608174e8-01ec-4565-9abe-3ad5136b3a45 This is my monitor                      Weekly  Mon @ 16:02      16:12
 ```
 
 This is a wide output, mostly because I include the MonitorGUID _and_ Name both ... they're just
@@ -212,7 +212,7 @@ PS> Request-uptMonitorMaintenancePeriod -MonitorGUID '608174e8-01ec-4565-9abe-3a
 
 MonitorGUID : 608174e8-01ec-4565-9abe-3ad5136b3a45
 Name        : This is my monitor
-Period      : {490638:OneTime:DisableMonitoring, 489533:OneTime:DisableNotifications}
+Period      : {490638:OneTime:DisableMonitoring, 489733:Weeekly:DisableNotifications}
 ```
 
 Of course, with the ShowSummary switch, you can pipe it to `| Select-Object -ExpandProperty Period` and
