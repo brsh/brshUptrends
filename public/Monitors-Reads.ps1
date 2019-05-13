@@ -114,56 +114,65 @@ function Get-uptGroup {
 
 function Request-uptGroupMember {
 	<#
-	.SYNOPSIS
-	Pull a list of MonitorGroupsMembers from Uptrends
+.SYNOPSIS
+Pulls a list of Monitor Groups from Uptrends
 
-	.DESCRIPTION
-	This function uses the API to pull a list of MonitorGroupsMembers from Uptrends - of course,
-	you need the MonitorGroupMember's GUID. You can set a Maintenance Period against
+.DESCRIPTION
+This function uses the API to pull a list of the Monitors in a Group from Uptrends - of course,
+you need the Group's GUID. You pretty much need a GUID for everything. Get used to it.
 
-	Alternatively, you can set an MW against a monitor, but you need the GUID of that monitor,
-	which you can get by using the Request-uptGroupMember function ... as long as you
-	know the MonitorGroup GUID.
+You can set an MP against Group or, alternatively, you can set an MP against a monitor, but you
+need the GUID of that Group or that Monitor, which you can get by using the Request-uptGroupMember
+function ... as long as you know the Group GUID.
 
-	Note that you should provide appropriate credentials to access the API, but the function will
-	ask for cred info if you don't. You can use the Set-uptStoredCredential for quick cred work.
-	If you have stored a cred in the module's memory space, you do not need to specify the cred
-	on the command line, and the function will not ask.
+Note that you should provide appropriate credentials to access the API, but the function will
+ask for cred info if you don't. You can use the Set-uptStoredCredential for quick cred work.
+If you have stored a cred in the module's memory space, you do not need to specify the cred
+on the command line, and the function will not ask.
 
-	.PARAMETER Credential
-	Specify a credential variable for access to the Uptrends API
+.PARAMETER GroupGUID
+The GUID(s) of the Group whose members you want to see
 
+.PARAMETER MonitorGroupName
+The Name(s) of the Group whose members you want to see (regex supported)
 
-	.PARAMETER DoNotStoreMembers
-	Just returns the list of MonitorGroupMembers - does not cache the response
+.PARAMETER Credential
+Credential for the API (unless already cached)
 
-	.EXAMPLE
-	Request-uptGroupMember
+.PARAMETER Filter
+A filter for the Monitor names (regex supported)
 
-	Pulls a list of all MonitorGroups using credentials stored in the module memory space
-	(or asks for cred information if no cred is saved)
+.PARAMETER DoNotStoreMembers
+Just returns the list of MonitorGroupMembers - does not cache the response
 
-	.EXAMPLE
-	$cred = Get-Credential
-	PS C:\>Request-uptGroupMember -Credential $cred
+.EXAMPLE
+Request-uptGroupMember
 
-	Pulls a list of all MonitorGroups using credentials in $cred
+Pulls a list of all MonitorGroups using credentials stored in the module memory space
+(or asks for cred information if no cred is saved)
 
-	.EXAMPLE
-	Request-uptGroupMember -MonitorGroupName '^AA', '^BB'
+.EXAMPLE
+$cred = Get-Credential
+PS C:\>Request-uptGroupMember -Credential $cred
 
-	Pulls members from the MonitorGroups starting with those letters. This requires Request-uptGroup function be run first
+Pulls a list of all MonitorGroups using credentials in $cred
 
-	.EXAMPLE
-	Request-uptGroupMember -GroupGuid '00000000-0000-0000-0000-000000000000', '11111111-1111-1111-1111-111111111111'
+.EXAMPLE
+Request-uptGroupMember -MonitorGroupName '^AA', '^BB'
 
-	Pulls members from the MonitorGroups with those GUIDs. This does not require any other Request-upt* function be run
+Pulls members from the MonitorGroups starting with those letters. This requires Request-uptGroup function be run first
 
-	.EXAMPLE
-	Request-uptGroup | Where-Object { $_.Description -match '^(AA|BB)' } | Request-uptGroupMember -DoNotStoreMembers
+.EXAMPLE
+Request-uptGroupMember -GroupGuid '00000000-0000-0000-0000-000000000000', '11111111-1111-1111-1111-111111111111'
 
-	Pulls Monitors in the groups whose descriptions start with AA or BB and does not cache the results
-	#>
+Pulls members from the MonitorGroups with those GUIDs. This does not require any other Request-upt* function be run
+
+.EXAMPLE
+Request-uptGroup | Where-Object { $_.Description -match '^(AA|BB)' } | Request-uptGroupMember -DoNotStoreMembers -Filter 'www\.site\.tld'
+
+Pulls Monitors with www.site.tld in the name in the groups whose descriptions start with AA or BB and does not cache the results
+#>
+
 	[CmdletBinding(DefaultParameterSetName = 'Default')]
 	param (
 		[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'GUID', ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
@@ -253,6 +262,7 @@ function Request-uptGroupMember {
 }
 
 function Request-uptMonitor {
+	#Really, you almost never run this manually. I will prolly move it to private someday
 	param (
 		[Parameter(Mandatory = $true, Position = 0, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
 		[guid[]] $MonitorGuid,

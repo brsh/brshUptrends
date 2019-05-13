@@ -1,33 +1,89 @@
 function New-uptMaintenancePeriod {
 	<#
-	.SYNOPSIS
-	Creates a hash of Maintenance Period Info
+.SYNOPSIS
+Creates a hash of Maintenance Period Info
 
-	.DESCRIPTION
-	To create a Maintenance Period, you have to feed the API an properly formatted set of information.
-	This function attempts to create that hash for you.
+.DESCRIPTION
+To create a Maintenance Period, you have to feed the API a properly formatted
+set of information. This function... creates that info for you.
 
-	.PARAMETER Start
-	Parameter description
+The types of Maintenance Periods are:
+	OneTime - only happen once and never again
+	Daily   - happen daily at the same time each day
+	Weekly  - happen once a week on the same day and same time
+	Monthly - happen once a month, on a specific day of the month
 
-	.PARAMETER End
-	Parameter description
+Depending on the type of MP, you'll need to specify either the WeekDay or the
+MonthDay when the MP should occur.
 
-	.PARAMETER Recurring
-	Parameter description
+The Start date/time is the only one you really need to specify as a date. You
+can specify and End date/time, or how many minutes or how many hours the MP
+should last.
 
-	.PARAMETER DisableAlertsOnly
-	Parameter description
+Finally, MPs can DisableAlertsOnly or, by default, it will disable Alerts
+AND Monitoring. If you're really working on the system, you'll prolly want to
+use the default and disable all Monitoring. But, sometimes, you want the
+Monitors to continue, but you just don't care to hear about it. Your choice.
 
-	.EXAMPLE
-	An example
+.PARAMETER OneTime
+This is a OneTime MP
 
-	.LINK
-	https://www.uptrends.com/support/kb/api/maintenance-periods
+.PARAMETER Daily
+This is a Daily MP
 
-	.NOTES
-	General notes
-	#>
+.PARAMETER Weekly
+This is a Weekly MP
+
+.PARAMETER Monthly
+This is a Monthly MP
+
+.PARAMETER Start
+The Start date time for the MP
+
+.PARAMETER End
+The End data time for the MP
+
+.PARAMETER Minutes
+How many minutes the MP should last
+
+.PARAMETER Hours
+How many hours the MP should last
+
+.PARAMETER WeekDay
+Which day of the week a Weekly MP should run
+
+.PARAMETER MonthDay
+Which day of the month a Monthly MP should run (exampl, 19 [the 19th day] - or 5 [the 5th day])
+
+.PARAMETER DisableAlertsOnly
+Default, All Monitoring will be stopped. This will keep Monitoring active; it just won't alert
+
+.EXAMPLE
+$b = New-uptMaintenancePeriod -OneTime -Start '5/22/2019 7pm' -Hours 2 -DisableAlertsOnly
+PS> $b
+
+Name                           Value
+----                           -----
+ID                             0
+MaintenanceType                DisableNotifications
+StartDateTime                  2019-05-22T19:00:00.0000000
+EndDateTime                    2019-05-22T21:00:00.0000000
+ScheduleMode                   OneTime
+
+.EXAMPLE
+$b =  New-uptMaintenancePeriod -Weekly -Start '5/22/2019 7pm' -Hours 2 -WeekDay Tuesday
+PS> $b
+
+Name                           Value
+----                           -----
+ID                             0
+MaintenanceType                DisableMonitoring
+ScheduleMode                   Weekly
+WeekDay                        Tuesday
+StartTime                      19:00
+EndTime                        21:00
+#>
+
 
 	[CmdletBinding(DefaultParameterSetName = 'OneTime')]
 	param (
@@ -107,6 +163,45 @@ function New-uptMaintenancePeriod {
 }
 
 function Request-uptGroupMaintenancePeriod {
+	<#
+	.SYNOPSIS
+	Query the API for MPs for all monitors in a group
+
+	.DESCRIPTION
+	This is the big one - by default, showing any and all MPs defined for all the Monitors
+	in a Group (yep, skipping Monitors without MPs). You can use the -IncludeAllMonitors,
+	if you want, to include monitors without MPs - that's handy to see what does and
+	does _not_ have MPs.
+
+	The default view (in table format) is a stylized view of the MPs. OneTime MPs have
+	different properties than Daily/Weekly/Monthly monitors, so the stylized view "unites"
+	the properties so they're easier to peruse. The actual properties on the objects are
+	a little different, but accessible via Format-List or Select-Object cmdlets.
+
+	There is also a 'ShowSummary' switch, which is a more Monitor view of the data; it
+	groups the MPs by Monitor, showing just base MP information.
+
+	.PARAMETER GroupGUID
+	The GUID(s) of the Group to show
+
+	.PARAMETER Description
+	The Description of the Group to show (slower, since we'll have to query all groups to get their names)
+
+	.PARAMETER Credential
+	Credential for the API (unless already cached)
+
+	.PARAMETER ShowSummary
+	Show MP summaries grouped by Monitor
+
+	.PARAMETER IncludeAllMonitors
+	Show all monitors - even those without MPs
+
+	.EXAMPLE
+	Request-uptGroup -Filter 'AA', 'BB' | Request-uptGroupMaintenancePeriod
+
+	Shows MPs for all Monitors in AA and BB groups
+	#>
+
 	[CmdletBinding(DefaultParameterSetName = 'Default')]
 	param (
 		[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'GUID', ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
@@ -124,7 +219,6 @@ function Request-uptGroupMaintenancePeriod {
 			})]
 		[string[]] $Description,
 		[pscredential] $Credential,
-		#[switch] $DoNotStorePeriods = $false,
 		[switch] $ShowSummary,
 		[switch] $IncludeAllMonitors
 	)
@@ -164,6 +258,49 @@ function Request-uptGroupMaintenancePeriod {
 }
 
 function Request-uptMonitorMaintenancePeriod {
+	<#
+	.SYNOPSIS
+	Query the API for MPs on specific Monitors
+
+	.DESCRIPTION
+	This is the heavy lifter - this queries the API for MPs on specific Monitors - preferably
+	by MonitorGUID, but you can use the name if you cache them ahead of time. Frankly, you'll
+	use groups or scripts, so Monitor Names aren't really that important.
+
+	Just like the Request-uptGroupMaintenancePeriod function, this function, by default, will
+	not include Monitors that do not have MPs defined. You can use the -IncludeAllMonitors,
+	if you want, to include monitors without MPs - that's handy to see what does and
+	does _not_ have MPs.
+
+	The default view (in table format) is a stylized view of the MPs. OneTime MPs have
+	different properties than Daily/Weekly/Monthly monitors, so the stylized view "unites"
+	the properties so they're easier to peruse. The actual properties on the objects are
+	a little different, but accessible via Format-List or Select-Object cmdlets.
+
+	There is also a 'ShowSummary' switch, which is a more Monitor view of the data; it
+	groups the MPs by Monitor, showing just base MP information.
+
+	.PARAMETER MonitorGuid
+	The GUID(s) of the Monitors to get
+
+	.PARAMETER Name
+	The name(s) of the Monitors to query (regex capable); Monitors must be cached first
+
+	.PARAMETER Credential
+	Credential for the API (unless already cached)
+
+	.PARAMETER ShowSummary
+	Show MP summaries grouped by Monitor
+
+	.PARAMETER IncludeAllMonitors
+	Show all monitors - even those without MPs
+
+	.EXAMPLE
+	Request-uptMonitorMaintenancePeriod -MonitorGuid '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1', '4b422f94-36a0-470d-ae7e-641e91b02ccc'
+
+	Returns the MPs attached to the Monitors with those GUIDs (assuming there are MPs on those Monitors)
+	#>
+
 	[CmdletBinding(DefaultParameterSetName = 'Default')]
 	param (
 		[Parameter(Mandatory = $true, Position = 0, ParameterSetName = 'GUID', ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
@@ -213,19 +350,3 @@ function Request-uptMonitorMaintenancePeriod {
 
 	END { }
 }
-
-# function Get-uptMaintenancePeriod {
-# 	param (
-# 		[string] $Filter
-# 	)
-# 	if ($null -eq $script:MaintenancePeriods) {
-# 		Write-Status -Message 'No MaintenancePeriods have been requested from Uptrends.' -Type 'Error' -Level 0
-# 		Write-Status -Message 'Run Request-uptMaintenancePeriod to save a working set.' -Type 'Warning' -Level 1
-# 	} else {
-# 		if ($Filter) {
-# 			$script:MaintenancePeriods | Where-Object { $_.Name -match "$Filter" }
-# 		} else {
-# 			$script:MaintenancePeriods
-# 		}
-# 	}
-# }
