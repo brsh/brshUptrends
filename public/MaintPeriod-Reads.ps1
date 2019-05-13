@@ -82,6 +82,9 @@ ScheduleMode                   Weekly
 WeekDay                        Tuesday
 StartTime                      19:00
 EndTime                        21:00
+
+.LINK
+https://www.uptrends.com/support/kb/api/maintenance-periods
 #>
 
 
@@ -117,7 +120,9 @@ EndTime                        21:00
 		[Parameter(Mandatory = $true, ParameterSetName = 'Monthly')]
 		[ValidateRange(1, 31)]
 		[int] $MonthDay = (get-date).ToString('dd'),
-		[switch] $DisableAlertsOnly = $false
+		[switch] $DisableAlertsOnly = $false,
+		[ValidateScript( { if ($_ -gt 0) { $True } else { Throw 'ID must be a positive number' } })]
+		[int] $ID
 	)
 
 	[string] $Disable = 'DisableMonitoring'
@@ -134,10 +139,13 @@ EndTime                        21:00
 		$CloseDate = $End
 	}
 
-	$hash = [ordered] @{
-		ID              = 0
-		MaintenanceType = $Disable
+	$hash = [ordered] @{ }
+
+	if ($ID -gt 0) {
+		$hash.Add('ID', $ID)
 	}
+
+	$hash.Add('MaintenanceType', $Disable)
 
 	if ($OneTime) {
 		$hash.Add('StartDateTime', $Start.ToString('O'))
