@@ -22,7 +22,7 @@ function Add-uptMonitorMaintenancePeriod {
 
 	.EXAMPLE
 	$mp = New-uptMaintenancePeriod -Onetime -Start $((get-date).AddHours(2)) -Hours 2
-	PS> Add-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' -MaintenancePeriod $mp
+	PS C:\>Add-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' -MaintenancePeriod $mp
 
 	Saves a new MP to the $mp variable and then adds it to the Monitor specified
 
@@ -79,7 +79,7 @@ function Add-uptGroupMaintenancePeriod {
 
 	.EXAMPLE
 	$mp = New-uptMaintenancePeriod -Onetime -Start $((get-date).AddHours(2)) -Hours 2
-	PS> Add-uptGroupMaintenancePeriod -GroupGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' -MaintenancePeriod $mp
+	PS C:\>Add-uptGroupMaintenancePeriod -GroupGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' -MaintenancePeriod $mp
 
 	Saves a new MP to the $mp variable and then adds it to all Monitors in the Group(s) specified
 
@@ -144,8 +144,8 @@ function Edit-uptMaintenancePeriod {
 
 	.EXAMPLE
 	$mp = Request-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' | Where-Object { $_.ID -eq 503378 }
-	PS> $mp.WeekDay = 'Tuesday'
-	PS> Edit-uptMaintenancePeriod -MaintenancePeriod $mp
+	PS C:\>$mp.WeekDay = 'Tuesday'
+	PS C:\>Edit-uptMaintenancePeriod -MaintenancePeriod $mp
 
 	.LINK
 	https://www.uptrends.com/support/kb/api/maintenance-periods
@@ -208,13 +208,13 @@ function Remove-uptMaintenancePeriod {
 
 	.EXAMPLE
 	$mp = Request-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' | Where-Object { $_.ID -eq 503378 }
-	PS> Remove-uptMaintenancePeriod -MaintenancePeriod $mp
+	PS C:\>Remove-uptMaintenancePeriod -MaintenancePeriod $mp
 
 	Deletes MP with ID 503378
 
 	.EXAMPLE
 	$mp = Request-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1'
-	PS> Remove-uptMaintenancePeriod -MaintenancePeriod $mp
+	PS C:\>Remove-uptMaintenancePeriod -MaintenancePeriod $mp
 
 	Deletes all MPs on that Monitor
 

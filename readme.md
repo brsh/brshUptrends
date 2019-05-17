@@ -79,7 +79,7 @@ want to overwrite what you cache).
 Anyway, running that command will return something akin to:
 
 ```Powershell
-PS> Request-uptGroup
+PS C:\>Request-uptGroup
 
 GroupGUID                              Description
 ---------                              -----------
@@ -124,7 +124,7 @@ of all the groups cached (so, be careful of that All Monitors one...).
 So, something like this:
 
 ```Powershell
-PS> Request-uptGroupMember -GroupGUID 0ee92a05-7979-4e18-a620-2346eeabde9a
+PS C:\>Request-uptGroupMember -GroupGUID 0ee92a05-7979-4e18-a620-2346eeabde9a
 
 MonitorGUID                            Name
 -----------                            ----
@@ -132,7 +132,7 @@ MonitorGUID                            Name
 ```
 You could also do this:
 ```Powershell
-PS> Request-uptGroup -Filter 'Prod' | Request-uptGroupMember
+PS C:\>Request-uptGroup -Filter 'Prod' | Request-uptGroupMember
 
 MonitorGUID                            Name
 -----------                            ----
@@ -183,7 +183,7 @@ property names; you'll want to view the real properties via `Format-List` or som
 if you really want to know the real props....
 
 ```Powershell
-PS> Request-uptGroup -Filter 'Prod' | Request-uptGroupMaintenancePeriod
+PS C:\>Request-uptGroup -Filter 'Prod' | Request-uptGroupMaintenancePeriod
 
 ID        Disable MonitorGUID                          Name                                    Mode    Start            End
 --        ------- -----------                          ----                                    ----    -----            ---
@@ -194,7 +194,7 @@ ID        Disable MonitorGUID                          Name                     
 and
 
 ```Powershell
-PS> Request-uptMonitorMaintenancePeriod -MonitorGUID '608174e8-01ec-4565-9abe-3ad5136b3a45'
+PS C:\>Request-uptMonitorMaintenancePeriod -MonitorGUID '608174e8-01ec-4565-9abe-3ad5136b3a45'
 
 ID        Disable MonitorGUID                          Name                                    Mode    Start            End
 --        ------- -----------                          ----                                    ----    -----            ---
@@ -209,7 +209,7 @@ Notice that this includes 2 MPs on a single Monitor. If you used the `ShowSummar
 it would look like this:
 
 ```Powershell
-PS> Request-uptMonitorMaintenancePeriod -MonitorGUID '608174e8-01ec-4565-9abe-3ad5136b3a45' -ShowSummary
+PS C:\>Request-uptMonitorMaintenancePeriod -MonitorGUID '608174e8-01ec-4565-9abe-3ad5136b3a45' -ShowSummary
 
 MonitorGUID : 608174e8-01ec-4565-9abe-3ad5136b3a45
 Name        : This is my monitor
@@ -278,7 +278,7 @@ A example of a one-time MP is
 ```PowerShell
 
 PS C:\>$b = New-uptMaintenancePeriod -OneTime -Start '5/22/2019 7pm' -Hours 2 -DisableAlertsOnly
-PS> $b
+PS C:\>$b
 
 Name                           Value
 ----                           -----
@@ -294,8 +294,8 @@ By the way, TimeZones are gonna be a pain with these things. Just saying.
 Similarly, a weekly MP looks like this:
 
 ```PowerShell
-PS C:\>$b =  New-uptMaintenancePeriod -Weekly -Start '5/22/2019 7pm' -Hours 2 -WeekDay Tuesday
-PS> $b
+PS C:\>$b = New-uptMaintenancePeriod -Weekly -Start '5/22/2019 7pm' -Hours 2 -WeekDay Tuesday
+PS C:\>$b
 
 Name                           Value
 ----                           -----
@@ -324,7 +324,7 @@ Add-uptMonitorMaintenancePeriod [-MonitorGUID] <Guid[]> [[-MaintenancePeriod] <O
 So, to add an MP to a monitor:
 ```powershell
 PS C:\>$mp = New-uptMaintenancePeriod -Onetime -Start $((get-date).AddHours(2)) -Hours 2
-PS> Add-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' -MaintenancePeriod $mp
+PS C:\>Add-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' -MaintenancePeriod $mp
 ```
 
 ### Add a Maintenance Period to a Group
@@ -343,7 +343,7 @@ Add-uptGroupMaintenancePeriod [-GroupGUID] <Guid[]> [[-MaintenancePeriod] <Objec
 So, to add an MP to every Monitor in a Group:
 ```powershell
 PS C:\>$mp = New-uptMaintenancePeriod -Onetime -Start $((get-date).AddHours(2)) -Hours 2
-PS> Add-uptGroupMaintenancePeriod -GroupGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' -MaintenancePeriod $mp
+PS C:\>Add-uptGroupMaintenancePeriod -GroupGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' -MaintenancePeriod $mp
 ```
 
 ### Edit a Maintenance Period
@@ -373,8 +373,8 @@ the day, then saving it.
 
 ```Powershell
 PS C:\>$mp = Request-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' | Where-Object { $_.ID -eq 503378 }
-PS> $mp.WeekDay = 'Tuesday'
-PS> Edit-uptMaintenancePeriod -MaintenancePeriod $mp
+PS C:\>$mp.WeekDay = 'Tuesday'
+PS C:\>Edit-uptMaintenancePeriod -MaintenancePeriod $mp
 ```
 Bam! Just that ez
 
@@ -401,11 +401,11 @@ Remove-uptMaintenancePeriod [-MaintenancePeriod] <PSObject[]> [-Credential <PSCr
 So, to delete an MP with a specific ID:
 ```powershell
 PS C:\>$mp = Request-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' | Where-Object { $_.ID -eq 503378 }
-PS> Remove-uptMaintenancePeriod -MaintenancePeriod $mp
+PS C:\>Remove-uptMaintenancePeriod -MaintenancePeriod $mp
 ```
 
 and to delete all MPs on that Monitor
 ```powershell
 PS C:\>$mp = Request-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1'
-PS> Remove-uptMaintenancePeriod -MaintenancePeriod $mp
+PS C:\>Remove-uptMaintenancePeriod -MaintenancePeriod $mp
 ```

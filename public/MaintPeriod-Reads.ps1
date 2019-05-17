@@ -60,7 +60,7 @@ Default, All Monitoring will be stopped. This will keep Monitoring active; it ju
 
 .EXAMPLE
 $b = New-uptMaintenancePeriod -OneTime -Start '5/22/2019 7pm' -Hours 2 -DisableAlertsOnly
-PS> $b
+PS C:\>$b
 
 Name                           Value
 ----                           -----
@@ -72,7 +72,7 @@ ScheduleMode                   OneTime
 
 .EXAMPLE
 $b =  New-uptMaintenancePeriod -Weekly -Start '5/22/2019 7pm' -Hours 2 -WeekDay Tuesday
-PS> $b
+PS C:\>$b
 
 Name                           Value
 ----                           -----
