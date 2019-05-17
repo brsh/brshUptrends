@@ -337,7 +337,7 @@ the only proof that it succeeds is a "quick" list of all MPs on the Group :(
 
 #### Syntax
 ```Powershell
-Add-uptGroupMaintenancePeriod [-GroupGUID] <Guid[]> [[-MaintenancePeriod] <Object>] [[-Credential] <PSCredential>]
+Add-uptGroupMaintenancePeriod [-GroupGUID] <Guid[]> [-MaintenancePeriod] <Object> [[-Credential] <PSCredential>]
 ```
 
 So, to add an MP to every Monitor in a Group:

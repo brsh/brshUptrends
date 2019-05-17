@@ -33,6 +33,7 @@ function Add-uptMonitorMaintenancePeriod {
 	param (
 		[Parameter(Mandatory = $true, ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
 		[guid[]] $MonitorGUID,
+		[Parameter(Mandatory = $true)]
 		[Alias('MP')]
 		$MaintenancePeriod,
 		[pscredential] $Credential
