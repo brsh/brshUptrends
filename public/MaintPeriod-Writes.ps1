@@ -134,7 +134,7 @@ function Edit-uptMaintenancePeriod {
 		Request-uptMonitorMaintenancePeriod | where-object { $_.ID -eq ### }
 
 	and then changing the approp property... and then using it in the command line.
-	See the example for ... and example.
+	See the example for ... an example.
 
 	.PARAMETER MaintenancePeriod
 	The MP object created via New-uptMaintenancePeriod
@@ -194,12 +194,11 @@ function Remove-uptMaintenancePeriod {
 	.DESCRIPTION
 	This function deletes an MP - gone. Bye Bye.
 
-	The key pieces of information are the MonitorGUID, the MP ID, and the changes.
+	The key pieces of information are the MonitorGUID and the MP ID.
 
 	And since MonitorGUID and MP ID are both required, it's best to pull the specific
-	MP(s) you want via the Request-uptMonitorMaintenancePeriod function.
-
-	and then using it in the command line. See the example for ... and example.
+	MP(s) you want via the Request-uptMonitorMaintenancePeriod function,
+	and then using it in the command line. See the example for ... an example.
 
 	.PARAMETER MaintenancePeriod
 	The MP object created via New-uptMaintenancePeriod

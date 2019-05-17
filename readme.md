@@ -35,11 +35,11 @@ encrypted tokens, cuz I find that to be simple.
 
 ```Powershell
 Syntax
-    Set-uptStoredCredential [-UserName <String>] [-Password <String>] [-DoNotStoreCred]
+Set-uptStoredCredential [-UserName <String>] [-Password <String>] [-DoNotStoreCred]
 
-    Set-uptStoredCredential [-UserName <String>] [-PasswordSecure <SecureString>] [-DoNotStoreCred]
+Set-uptStoredCredential [-UserName <String>] [-PasswordSecure <SecureString>] [-DoNotStoreCred]
 
-    Set-uptStoredCredential [-SecureTokenUserName <String>] [-SecureTokenPasswordName <String>] [-DoNotStoreCred]
+Set-uptStoredCredential [-SecureTokenUserName <String>] [-SecureTokenPasswordName <String>] [-DoNotStoreCred]
 ```
 If you don't supply anything, the function will ask you for your creds - this keeps it off the
 command line, which is nice. You can also pass in SecureString that you establish beforehand if
@@ -100,11 +100,11 @@ within those groups. Again, this is handy for doing stuff ... cuz you get those 
 #### Syntax
 
 ```Powershell
-    Request-uptGroupMember [-Credential <PSCredential>] [-Filter <String[]>] [-DoNotStoreMembers ]
+Request-uptGroupMember [-Credential <PSCredential>] [-Filter <String[]>] [-DoNotStoreMembers ]
 
-    Request-uptGroupMember [-GroupGUID] <Guid[]> [-Credential <PSCredential>] [-Filter <String[]>] [-DoNotStoreMembers]
+Request-uptGroupMember [-GroupGUID] <Guid[]> [-Credential <PSCredential>] [-Filter <String[]>] [-DoNotStoreMembers]
 
-    Request-uptGroupMember [-MonitorGroupName] <String[]> [-Credential <PSCredential>] [-Filter <String[]>] [-DoNotStoreMembers]
+Request-uptGroupMember [-MonitorGroupName] <String[]> [-Credential <PSCredential>] [-Filter <String[]>] [-DoNotStoreMembers]
 ```
 
 If you have the GroupGUID, that'll get you the fastest turnaround. Just supply it (as 1 GUID or an array),
@@ -149,21 +149,20 @@ basically just helping shorten things for you).
 #### Syntax
 
 ```Powershell
-    Request-uptGroupMaintenancePeriod [-Credential <pscredential>] [-ShowSummary] [-IncludeAllMonitors]
+Request-uptGroupMaintenancePeriod [-Credential <pscredential>] [-ShowSummary] [-IncludeAllMonitors]
 
-    Request-uptGroupMaintenancePeriod [-GroupGUID] <guid[]> [-Credential <pscredential>] [-ShowSummary] [-IncludeAllMonitors]
+Request-uptGroupMaintenancePeriod [-GroupGUID] <guid[]> [-Credential <pscredential>] [-ShowSummary] [-IncludeAllMonitors]
 
-    Request-uptGroupMaintenancePeriod [-Description] <string[]> [-Credential <pscredential>] [-ShowSummary] [-IncludeAllMonitors]
+Request-uptGroupMaintenancePeriod [-Description] <string[]> [-Credential <pscredential>] [-ShowSummary] [-IncludeAllMonitors]
 ```
 and
 
 ```Powershell
+Request-uptMonitorMaintenancePeriod [-Credential <pscredential>] [-ShowSummary] [-IncludeAllMonitors]
 
-    Request-uptMonitorMaintenancePeriod [-Credential <pscredential>] [-ShowSummary] [-IncludeAllMonitors]
+Request-uptMonitorMaintenancePeriod [-MonitorGuid] <guid[]> [-Credential <pscredential>] [-ShowSummary] [-IncludeAllMonitors]
 
-    Request-uptMonitorMaintenancePeriod [-MonitorGuid] <guid[]> [-Credential <pscredential>] [-ShowSummary] [-IncludeAllMonitors]
-
-    Request-uptMonitorMaintenancePeriod [-Name] <string[]> [-Credential <pscredential>] [-ShowSummary] [-IncludeAllMonitors]
+Request-uptMonitorMaintenancePeriod [-Name] <string[]> [-Credential <pscredential>] [-ShowSummary] [-IncludeAllMonitors]
 ```
 
 These are very similar, really only differing in the GUID you use (GroupGUID vs MonitorGUID). On the
@@ -219,3 +218,194 @@ Period      : {490638:OneTime:DisableMonitoring, 489733:Weeekly:DisableNotificat
 
 Of course, with the ShowSummary switch, you can pipe it to `| Select-Object -ExpandProperty Period` and
 get back to that first list... it's all just creative formating.
+
+## Setting or Changing Maintenance Periods
+
+The main piece of information needed to do almost anything with the API is a GUID: whether
+for MonitorGroups or Monitors themselves (although there's a bit of inconsistency what can
+be done with one versus the other). The only time you need something other than a GUID
+is if you're working with MPs ... then you need the ID (and also, usually, a GUID).
+
+Key thing to remember about MPs (explained several times above): the default
+table-view of MPs simplifies the MPs properties so they can all be viewed
+together in a nice, succinct table. The actual properties are vieable when you
+pipe to Format-Table (a la ` ... | Format-Table *`)
+
+See https://www.uptrends.com/support/kb/api/maintenance-periods for some fun light reading.
+
+### Define a New Maintenance Period
+
+To create a Maintenance Period, you have to feed the API a properly formatted
+set of information. This function... creates that info for you.
+
+The types of Maintenance Periods are:
+* OneTime - only happen once and never again
+* Daily   - happen daily at the same time each day
+* Weekly  - happen once a week on the same day and same time
+* Monthly - happen once a month, on a specific day of the month
+
+Depending on the type of MP, you'll need to specify either the WeekDay or the
+MonthDay when the MP should occur.
+
+The Start date/time is the only one you really need to specify as a date. You
+can specify and End date/time, or how many minutes or how many hours the MP
+should last.
+
+Finally, MPs can DisableAlertsOnly or, by default, it will disable Alerts
+AND Monitoring. If you're really working on the system, you'll prolly want to
+use the default and disable all Monitoring. But, sometimes, you want the
+Monitors to continue, but you just don't care to hear about it. Your choice.
+
+#### Syntax
+```Powershell
+New-uptMaintenancePeriod -OneTime  -Start <DateTime> [-End <DateTime>] [-Minutes <Int32>] [-Hours <Int32>] [-DisableAlertsOnly ] [-ID <Int32>] [<CommonParameters>]
+
+New-uptMaintenancePeriod -Daily  -Start <DateTime> [-End <DateTime>] [-Minutes <Int32>] [-Hours <Int32>] [-DisableAlertsOnly ] [-ID <Int32>] [<CommonParameters>]
+
+New-uptMaintenancePeriod -Weekly  -Start <DateTime> [-End <DateTime>] [-Minutes <Int32>] [-Hours <Int32>] -WeekDay <String> [-DisableAlertsOnly ] [-ID <Int32>] [<CommonParameters>]
+
+New-uptMaintenancePeriod -Monthly  -Start <DateTime> [-End <DateTime>] [-Minutes <Int32>] [-Hours <Int32>] -MonthDay <Int32> [-DisableAlertsOnly ] [-ID <Int32>] [<CommonParameters>]
+```
+Reasonably self-explanatory here. (And yeah, I'm sorry I couldn't figure out the
+right combo of ParameterSetNames to minimize some of the overlap).
+
+Prolly the one piece that needs explaining is the `-DisableAlertsOnly` switch.
+By default, these MPs will disable all monitoring AND alerting. This switch
+will keep monitoring active, but stop alerts.
+
+A example of a one-time MP is
+
+```PowerShell
+
+PS C:\>$b = New-uptMaintenancePeriod -OneTime -Start '5/22/2019 7pm' -Hours 2 -DisableAlertsOnly
+PS> $b
+
+Name                           Value
+----                           -----
+ID                             0
+MaintenanceType                DisableNotifications
+StartDateTime                  2019-05-22T19:00:00.0000000
+EndDateTime                    2019-05-22T21:00:00.0000000
+ScheduleMode                   OneTime
+```
+
+By the way, TimeZones are gonna be a pain with these things. Just saying.
+
+Similarly, a weekly MP looks like this:
+
+```PowerShell
+PS C:\>$b =  New-uptMaintenancePeriod -Weekly -Start '5/22/2019 7pm' -Hours 2 -WeekDay Tuesday
+PS> $b
+
+Name                           Value
+----                           -----
+ID                             0
+MaintenanceType                DisableMonitoring
+ScheduleMode                   Weekly
+WeekDay                        Tuesday
+StartTime                      19:00
+EndTime                        21:00
+```
+
+### Add a Maintenance Period to a Monitor
+
+A function to add a pre-defined MaintenancePeriod object to one or several
+monitors. This works at the monitor level and is intended for the one- or
+few-offs that occur.
+
+If you need a quick way to set MPs on all Monitors in a Group, use the
+Add-uptGroupMaintenancePeriod function.
+
+#### Syntax
+```Powershell
+Add-uptMonitorMaintenancePeriod [-MonitorGUID] <Guid[]> [[-MaintenancePeriod] <Object>] [[-Credential] <PSCredential>]
+```
+
+So, to add an MP to a monitor:
+```powershell
+PS C:\>$mp = New-uptMaintenancePeriod -Onetime -Start $((get-date).AddHours(2)) -Hours 2
+PS> Add-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' -MaintenancePeriod $mp
+```
+
+### Add a Maintenance Period to a Group
+
+Possibly better than the Add-uptMonitorMaintenancePeriod function...
+
+The quickest way to add an MP to a lot of monitors: add it to the Group. The
+drawback ... Uptrends does not return anything other than a status code, so
+the only proof that it succeeds is a "quick" list of all MPs on the Group :(
+
+#### Syntax
+```Powershell
+Add-uptGroupMaintenancePeriod [-GroupGUID] <Guid[]> [[-MaintenancePeriod] <Object>] [[-Credential] <PSCredential>]
+```
+
+So, to add an MP to every Monitor in a Group:
+```powershell
+PS C:\>$mp = New-uptMaintenancePeriod -Onetime -Start $((get-date).AddHours(2)) -Hours 2
+PS> Add-uptGroupMaintenancePeriod -GroupGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' -MaintenancePeriod $mp
+```
+
+### Edit a Maintenance Period
+
+Doesn't matter if you set the MP on a Monitor or a Group... you can only
+edit an MP on a monitor: you need the MonitorGUID and the MP ID. Luckily,
+that's all contained in the MPs returned by the various MP Request functions.
+
+This function adjusts the settings of an MP - so you can change the end time,
+or the week day... whatever you need to change, you prolly can change it. The
+key pieces of information are the MonitorGUID, the MP ID, and the changes.
+
+And since MonitorGUID and MP ID are both required, it's best to pull the specific
+MP(s) you want via
+
+`Request-uptMonitorMaintenancePeriod | where-object { $_.ID -eq ### }`
+
+and then changing the approp property... and then using it in the command line.
+
+#### Syntax
+```powershell
+Edit-uptMaintenancePeriod [-MaintenancePeriod] <PSObject[]> [-Credential <PSCredential>] [<CommonParameters>]
+```
+
+So, changing the day on a Weekly MP requires: first getting the MP, then editing
+the day, then saving it.
+
+```Powershell
+PS C:\>$mp = Request-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' | Where-Object { $_.ID -eq 503378 }
+PS> $mp.WeekDay = 'Tuesday'
+PS> Edit-uptMaintenancePeriod -MaintenancePeriod $mp
+```
+Bam! Just that ez
+
+And you can do that for multiple MPs just by adjusting the Where-Object
+statement to return more MPs. Just bear in mind that you'll have to adjust
+EACH MP in the array ... so `$MP[0].Weekday`, `$MP[1].Weekday` etc. (or,
+of course, a nice tidy foreach-object loop).
+
+### Delete a Maintenance Period
+
+Very similar to the Edit... this function deletes an MP - gone. Bye Bye.
+
+Here, the key pieces of information are the MonitorGUID and the MP ID
+
+And since MonitorGUID and MP ID are both required, it's best to pull the specific
+MP(s) you want via the Request-uptMonitorMaintenancePeriod function,
+and then using it in the command line.
+
+#### Syntax
+```powershell
+Remove-uptMaintenancePeriod [-MaintenancePeriod] <PSObject[]> [-Credential <PSCredential>] [<CommonParameters>]
+```
+
+So, to delete an MP with a specific ID:
+```powershell
+PS C:\>$mp = Request-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1' | Where-Object { $_.ID -eq 503378 }
+PS> Remove-uptMaintenancePeriod -MaintenancePeriod $mp
+```
+
+and to delete all MPs on that Monitor
+```powershell
+PS C:\>$mp = Request-uptMonitorMaintenancePeriod -MonitorGUID '76c69d9f-05a7-4e8e-a6cc-7c6dc17538f1'
+PS> Remove-uptMaintenancePeriod -MaintenancePeriod $mp
+```
