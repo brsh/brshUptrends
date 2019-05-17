@@ -79,6 +79,7 @@ function Request-uptGroup {
 		$obj = new-object -TypeName PSCustomObject -Property @{
 			Description = $_.Description
 			GroupGUID   = $GroupGuid
+			StatusCode  = $_.StatusCode
 		}
 		$obj.PSTypeNames.Insert(0, "brshUptrends.Group")
 		$obj
