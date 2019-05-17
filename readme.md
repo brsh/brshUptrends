@@ -21,7 +21,7 @@ And besides, it's the future: we script everything nowadays.
 
 You _do_ need API access (well, Uptrends access and _then_ API access) to use these functions.
 I recommend heading over to https://www.uptrends.com/support/kb/api/v4 and scrolling to the
-Authentication section. I thought about adding a function to create the API account ... but
+Authentication section (ok, here's a direct link to the Swagger UI that might work for ya: https://api.uptrends.com/v4/swagger/index.html?url=/v4/swagger/v1/swagger.json#/Register). I thought about adding a function to create the API account ... but
 you only need it once... why not just use their interface?
 
 Once you have creds, you'll need them for each access to the API - so cache 'em somehow: either
